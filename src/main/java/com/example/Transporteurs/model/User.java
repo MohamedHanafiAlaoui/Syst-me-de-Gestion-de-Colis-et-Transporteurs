@@ -21,6 +21,7 @@ public class User {
     private String username;
     private String Password;
     private Role role;
+
     private boolean active = false;
 
 
