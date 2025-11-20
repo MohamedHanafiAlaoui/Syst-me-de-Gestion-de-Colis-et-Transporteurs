@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb_colis
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: logistique
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  mongo-express:
+    image: mongo-express:1.0.0-alpha
+    container_name: mongo_express_colis
+    restart: always
+    depends_on:
+      - mongodb
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongodb
+
+  tomcat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tomcat_colis
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: "mongodb://admin:password@mongodb:27017/logistique?authSource=admin"
+      JWT_SECRET: "mySecretKeyForJWTGenerationInProductionEnvironment2024"
+    networks:
+      - backend
+
+volumes:
+  mongodb_data:
+
+networks:
+  backend:
+    driver: bridge
