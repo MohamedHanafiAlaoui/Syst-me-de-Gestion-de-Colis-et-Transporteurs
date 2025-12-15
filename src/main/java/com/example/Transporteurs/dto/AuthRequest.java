@@ -1,9 +1,12 @@
 package com.example.Transporteurs.dto;
 
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class AuthRequest {
+    @NotBlank
     private String username;
-    private String Password;
+    @NotBlank
+    private String password;
 }
