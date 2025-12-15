@@ -27,24 +27,5 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_SERVER: mongodb
 
-  tomcat:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: tomcat_colis
-    depends_on:
-      - mongodb
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATA_MONGODB_URI: "mongodb://admin:password@mongodb:27017/logistique?authSource=admin"
-      JWT_SECRET: "mySecretKeyForJWTGenerationInProductionEnvironment2024"
-    networks:
-      - backend
-
 volumes:
   mongodb_data:
-
-networks:
-  backend:
-    driver: bridge
