@@ -1,42 +1,38 @@
 package com.example.Transporteurs.service;
 
-
 import com.example.Transporteurs.dto.AuthRequest;
 import com.example.Transporteurs.dto.AuthResponse;
 import com.example.Transporteurs.model.User;
 import com.example.Transporteurs.repository.UserRepository;
 import com.example.Transporteurs.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 @Service
-@RestController
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService authService(AuthRequest request)
-    {
+    public AuthResponse authenticate(AuthRequest request) {
+
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
         if (!user.isActive())
-        {
             throw new RuntimeException("Compte désactivé");
-        }
 
-        if (!passwordEncode.matches(request.getPassword(),user.getPassword()))
-        {
-            throw new RuntimeException("Password incorrecte");
-        }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
+            throw new RuntimeException("Mot de passe incorrect");
 
-        String token=JwtUtil.generateToken(user);
-        return new AuthResponse(token,user.getRole());
+        String token = jwtUtil.generateToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
 
+        return new AuthResponse(token, user.getRole());
     }
-
-
-
 }
